@@ -4,10 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import fr.isen.tuveny.androidcontactds.databinding.CellHomeContactBinding
-import fr.isen.tuveny.androidcontactds.model.Contact
+import fr.isen.tuveny.androidcontactds.model.api.Contact
 
-class HomeContactAdapter(private val contactList: MutableList<Contact>) : RecyclerView.Adapter<HomeContactAdapter.ViewHolder>() {
+class HomeContactAdapter(private val contacts: MutableList<Contact>, val onViewClick: (Contact) -> Unit) :
+    RecyclerView.Adapter<HomeContactAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = CellHomeContactBinding.bind(itemView)
     }
@@ -19,11 +21,27 @@ class HomeContactAdapter(private val contactList: MutableList<Contact>) : Recycl
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val contact = contactList[position]
-        holder.binding.cellContactName.text = contact.name
-        holder.binding.cellContactAddress.text = contact.address
+        val contact = contacts[position]
+        holder.binding.cellContactName.text = contact.fullName
+        holder.binding.cellContactAddress.text = contact.fullAddress
         holder.binding.cellContactEmail.text = contact.email
+
+        if (contact.mediumPicture != null) {
+            Picasso.get().load(contact.mediumPicture)
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .into(holder.binding.cellContactImage)
+        }
+
+        holder.itemView.setOnClickListener {
+            onViewClick(contact)
+        }
     }
 
-    override fun getItemCount() = contactList.size
+    override fun getItemCount() = contacts.size
+    fun updateList(contactsNew: List<Contact>) {
+        contacts.clear()
+        contacts.addAll(contactsNew)
+        notifyDataSetChanged()
+    }
 }
