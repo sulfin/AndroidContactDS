@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         binding.homeContactListRV.adapter = adapter
         binding.homeContactListRV.layoutManager = LinearLayoutManager(this)
         binding.homeContactListRV.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-
+        binding.loadingBar.isVisible = true
         requestContacts()
     }
 
@@ -63,12 +64,14 @@ class MainActivity : AppCompatActivity() {
     private fun onError(error: VolleyError) {
         Log.e("MainActivity", error.toString())
         Snackbar.make(binding.root, "Error loading Contacts", Snackbar.LENGTH_LONG).show()
+        binding.loadingBar.isVisible = false
     }
 
     private fun onResponse(response: JSONObject) {
         Log.i("MainActivity", response.toString())
         val apiResult = Gson().fromJson(response.toString(), APIResult::class.java)
         val contacts = apiResult.results
+        binding.loadingBar.isVisible = false
         adapter.updateList(contacts)
     }
 }
