@@ -16,7 +16,7 @@ data class Contact(
 
     ) : Parcelable {
     val fullName: String
-        get() = "${name.title} ${name.first} ${name.last}"
+        get() = "${name.first} ${name.last}"
     val fullAddress: String
         get() = "${location.street.number} ${location.street.name}, ${location.city}"
     val largePicture: String?
